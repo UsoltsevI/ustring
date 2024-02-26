@@ -1,0 +1,7 @@
+*.o
+*.x
+*.out
+*.exe
+tstr.cpp
+consp.cpp
+Text.txt
