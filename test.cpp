@@ -56,6 +56,7 @@ int main() {
     std::cout << "find_res: " << nf.find(ss) << std::endl;
     nf += "I understand you gotta crawl before you get to your feet\n";
     nf += "But I been running for a while, they ain't ready for me, ah!\n";
-    nf.print(std::cout);
     std::cout << std::endl;
+
+    std::cout << nf << std::endl;
 }

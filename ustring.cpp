@@ -33,14 +33,14 @@ ustring::ustring(std::initializer_list<value_type> list)
 
 ustring::ustring(const_value_pointer s)
         : ustring(c_str_len(s)) {
-    for (size_type i = 0; i <= sz; i++) {
+    for (size_type i = 0; i <= sz; ++i) {
         arr[i] = s[i];
     }
 }
 
 ustring::ustring(const_value_pointer str, size_type count)
         : ustring(count) {
-    for (size_type i = 0; i < sz; i++) {
+    for (size_type i = 0; i < sz; ++i) {
         arr[i] = str[i];
     }
 }
@@ -145,7 +145,7 @@ ustring& ustring::insert(size_type pos, value_type ch, size_type count) {
         reserve(sz + 1);
     }
 
-    for (size_type i = pos; i < pos + count; i++) {
+    for (size_type i = pos; i < pos + count; ++i) {
         arr[i] = ch; 
     }
 
@@ -190,7 +190,7 @@ ustring& ustring::append(size_type count, value_type ch) {
         this->reserve(cap + count + 1);
     }
 
-    for (size_type i = sz; i < sz + count; i++) {
+    for (size_type i = sz; i < sz + count; ++i) {
         arr[i] = ch;
     }
 
@@ -234,7 +234,7 @@ ustring& ustring::replace(size_type pos, size_type count, const ustring& str) {
         reserve(sz + 1);
     }
 
-    for (size_type i = 0; i < count; i++) {
+    for (size_type i = 0; i < count; ++i) {
         arr[pos + i] = str.arr[i];
     }
 
@@ -249,7 +249,7 @@ ustring& ustring::replace(size_type pos, size_type count, const_value_pointer st
         reserve(sz + 1);
     }
 
-    for (size_type i = 0; i < count; i++) {
+    for (size_type i = 0; i < count; ++i) {
         arr[pos + i] = str[i];
     }
 
@@ -282,7 +282,7 @@ ustring::size_type ustring::find(const ustring& substr, size_type pos) const {
     curhash = rethash.first;
     k_hash_pow_len = rethash.second;
 
-    for (size_type i = pos; i <= sz - substr.sz; i++) {
+    for (size_type i = pos; i <= sz - substr.sz; ++i) {
         if (subhash == curhash) {
             if (!compare(substr, substr.sz, i)) {
                 return i;
@@ -311,7 +311,7 @@ ustring::size_type ustring::find(const_value_pointer s, size_type pos) const {
     curhash = rethash.first;
     k_hash_pow_len = rethash.second;
 
-    for (size_type i = pos; i <= sz - len; i++) {
+    for (size_type i = pos; i <= sz - len; ++i) {
         if (subhash == curhash) {
             if (!compare(s, len, i)) {
                 return i;
@@ -348,7 +348,7 @@ ustring::hash(const_value_pointer begin, const_value_pointer end) const {
 }
 
 int ustring::compare(const ustring& str) const {
-    for (size_type i = 0; i <= sz && i <= str.sz; i++) {
+    for (size_type i = 0; i <= sz && i <= str.sz; ++i) {
         if (arr[i] != str.arr[i]) {
             return arr[i] - str.arr[i];
         }
@@ -358,7 +358,7 @@ int ustring::compare(const ustring& str) const {
 }
 
 int ustring::compare(const_value_pointer s) const {
-    for (size_type i = 0; i <= sz; i++) {
+    for (size_type i = 0; i <= sz; ++i) {
         if (arr[i] != s[i]) {
             return arr[i] - s[i];
         }
@@ -368,7 +368,7 @@ int ustring::compare(const_value_pointer s) const {
 }
 
 int ustring::compare (const_value_pointer s, size_type count, size_type pos) const {
-    for (size_type i = 0; i < count; i++) {
+    for (size_type i = 0; i < count; ++i) {
         if (arr[pos + i] != s[i]) {
             return arr[pos + i] - s[i];
         }
@@ -378,7 +378,7 @@ int ustring::compare (const_value_pointer s, size_type count, size_type pos) con
 }
 
 int ustring::compare (const ustring& str, size_type count, size_type pos) const {
-    for (size_type i = 0; i < count; i++) {
+    for (size_type i = 0; i < count; ++i) {
         if (arr[pos + i] != str.arr[i]) {
             return arr[pos + i] - str.arr[i];
         }
@@ -399,7 +399,7 @@ bool ustring::starts_with(const_value_pointer s) const {
     size_type len = c_str_len(s);
 
     if (len <= sz) {
-        for (size_type i = 0; i < len; i++) {
+        for (size_type i = 0; i < len; ++i) {
             if (arr[i] != s[i]) {
                 return false;
             }
@@ -423,7 +423,7 @@ bool ustring::ends_with(const_value_pointer s) const {
     size_type len = c_str_len(s);
 
     if (len < sz) {
-        for (size_type i = len; i + 1 > 0; i--) {
+        for (size_type i = len; i + 1 > 0; --i) {
             if (arr[sz - i] != s[len - i]) {
                 return false;
             }
@@ -435,7 +435,7 @@ bool ustring::ends_with(const_value_pointer s) const {
     return false;
 }
 
-void ustring::getline(std::fstream& fin) {
+void ustring::getline(std::istream& fin) {
     size_type i = 0;
     value_type rd = 0;
 
@@ -446,6 +446,33 @@ void ustring::getline(std::fstream& fin) {
     }
 
     while (rd != '\n' && rd != EOF) {
+        if (i >= cap) {
+            reserve(cap * 2);
+        }
+
+        arr[i++] = rd;
+        fin >> rd;
+    }
+
+    sz = i;
+    arr[sz] = '\0';
+}
+
+void ustring::getword(std::istream& fin) {
+    size_type i = 0;
+    value_type rd = 0;
+
+    fin >> rd;
+
+    while (rd == ' ') {
+        fin >> rd;
+    }
+
+    if (rd != '\n' && cap == 0) {
+        reserve(MIN_CAP_TO_RESERVE);
+    }
+
+    while (rd != ' ' && rd != '\n' && rd != EOF) {
         if (i >= cap) {
             reserve(cap * 2);
         }
@@ -514,13 +541,13 @@ ustring& ustring::operator+=(const_value_pointer s) {
 }
 
 void ustring::print(std::ostream& fout) const {
-    for (size_type i = 0; i < sz; i++) {
+    for (size_type i = 0; i < sz; ++i) {
         fout << arr[i];
     }
 }
 
 void ustring::print(std::ostream& fout, size_type count) const {
-    for (size_type i = 0; i < count; i++) {
+    for (size_type i = 0; i < count; ++i) {
         fout << arr[i];
     }
 }
@@ -539,8 +566,9 @@ ustring::size_type ustring::next_num_power_of_two(size_type x) const {
     size_type res = 0;
     size_type pos = sizeof(size_type) * NUM_BIT_IN_BYTE;
 
-    while (((x >> pos) & 1u) == 0)
+    while (((x >> pos) & 1u) == 0) {
         pos--;
+    }
 
     res = res | (1u << (pos + 1));
 
@@ -549,4 +577,20 @@ ustring::size_type ustring::next_num_power_of_two(size_type x) const {
 
 ustring::~ustring() {
     delete[] arr;
+}
+
+ustring operator+(const ustring& a, const ustring& b) {
+    ustring result = a;
+    result += b;
+    return result;
+}
+
+std::ostream& operator<<(std::ostream& out, const nustr::ustring& str) {
+    str.print(out);
+    return out;
+}
+
+std::istream& operator>>(std::istream& in, nustr::ustring& str) {
+    str.getword(in);
+    return in;
 }

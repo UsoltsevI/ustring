@@ -5,15 +5,16 @@
 #include <fstream>
 
 namespace nustr {
-    const size_t MIN_CAP_TO_RESERVE = 0xf;
-    const size_t NUM_BIT_IN_BYTE    = 8;
-    const size_t MIN_NUM_POWER_OF_TWO = 2;
-    const size_t K_HASH = 1; 
-    // it doesn't work in some cases if (k-1) % HASH_MOD != 0
-    const size_t HASH_MOD = 1000'000'007;
     const size_t NPOS = -1;
 
     class ustring {
+    private:
+        static const size_t MIN_NUM_POWER_OF_TWO = 2;
+        static const size_t NUM_BIT_IN_BYTE = 8; // depends on version
+        static const size_t MIN_CAP_TO_RESERVE = 8;
+        static const size_t K_HASH = 1; 
+        // it doesn't work in some cases if (k-1) % HASH_MOD != 0
+        static const size_t HASH_MOD = 1000'000'007;
     public:
         using value_type = char;
         using size_type  = size_t;
@@ -24,7 +25,7 @@ namespace nustr {
 
     private:
         value_pointer arr = nullptr;
-        size_type sz = 0;
+        size_type sz  = 0;
         size_type cap = 0;
 
     public:
@@ -76,7 +77,8 @@ namespace nustr {
         int  compare    (const_value_pointer s, size_type count, size_type pos = 0) const;
         int  compare    (const ustring& str,    size_type count, size_type pos = 0) const;
 
-        void getline(std::fstream& fin);
+        void getline(std::istream& fin);
+        void getword(std::istream& fin);
 
         bool operator==(const ustring& other )      const;
         bool operator==(const_value_pointer s)      const;
@@ -90,6 +92,8 @@ namespace nustr {
         void print(std::ostream& fout) const;
         void print(std::ostream& fout, size_type count) const;
 
+        std::weak_ordering operator<=>(const ustring& other) const = default;
+
     private:
         void swap(ustring& other);
         size_type c_str_len(const_value_pointer str) const;
@@ -101,5 +105,10 @@ namespace nustr {
         ~ustring();
     };
 }
+
+nustr::ustring operator+(const nustr::ustring& a, const nustr::ustring& b);
+
+std::ostream& operator<<(std::ostream& out, const nustr::ustring& str);
+std::istream& operator>>(std::istream& in ,       nustr::ustring& str);
 
 #endif // USTRING_H_INCLUDED

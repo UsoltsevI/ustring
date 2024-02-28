@@ -1,8 +1,8 @@
 all: ustring.o test.o
-	g++ ustring.o test.o -o us.x
+	g++ -std=c++20 ustring.o test.o -o us.x
 
 ustring.o: ustring.cpp
-	g++ -O2 ustring.cpp -c
+	g++ -std=c++20 ustring.cpp -c
 
 test.o: test.cpp
-	g++ -O2 test.cpp -c
+	g++ -std=c++20 test.cpp -c
